@@ -128,14 +128,29 @@ def render_email(papers:list[ArxivPaper]):
         authors = ', '.join(authors)
         if len(p.authors) > 5:
             authors += ', ...'
-        if p.affiliations is not None:
-            affiliations = p.affiliations[:5]
+        try:
+            tldr = p.tldr
+            if not tldr:
+                tldr = p.summary or "TLDR unavailable."
+        except Exception as e:
+            logger.warning(f"Failed to generate TLDR for {p.arxiv_id}: {e}")
+            tldr = p.summary or "TLDR unavailable."
+
+        try:
+            affiliations_list = p.affiliations
+        except Exception as e:
+            logger.warning(f"Failed to extract affiliations for {p.arxiv_id}: {e}")
+            affiliations_list = None
+
+        if affiliations_list:
+            affiliations = affiliations_list[:5]
             affiliations = ', '.join(affiliations)
-            if len(p.affiliations) > 5:
+            if len(affiliations_list) > 5:
                 affiliations += ', ...'
         else:
             affiliations = 'Unknown Affiliation'
-        parts.append(get_block_html(p.title, authors,rate,p.arxiv_id ,p.tldr, p.pdf_url, p.code_url, affiliations))
+
+        parts.append(get_block_html(p.title, authors,rate,p.arxiv_id ,tldr, p.pdf_url, p.code_url, affiliations))
 
     content = '<br>' + '</br><br>'.join(parts) + '</br>'
     return framework.replace('__CONTENT__', content)

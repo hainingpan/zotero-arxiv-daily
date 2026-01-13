@@ -2,9 +2,9 @@
 FROM python:3.11-slim
 
 # 设置python镜像
-ENV UV_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
-ENV PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
-ENV PIP_TRUSTED_HOST=pypi.tuna.tsinghua.edu.cn
+ENV UV_INDEX_URL=https://pypi.org/simple
+ENV PIP_INDEX_URL=https://pypi.org/simple
+ENV PIP_TRUSTED_HOST=pypi.org
 
 # 设置工作目录
 WORKDIR /app
@@ -16,9 +16,9 @@ RUN echo 'Acquire::AllowReleaseInfoChange::Suite "true";' > /etc/apt/apt.conf.d/
 # 设置debian镜像
 RUN rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*
 RUN echo "\
-deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm main contrib non-free\n\
-deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm-updates main contrib non-free\n\
-deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm-backports main contrib non-free\n\
+deb https://deb.debian.org/debian/ bookworm main contrib non-free\n\
+deb https://deb.debian.org/debian/ bookworm-updates main contrib non-free\n\
+deb https://deb.debian.org/debian/ bookworm-backports main contrib non-free\n\
 deb https://security.debian.org/debian-security bookworm-security main contrib non-free" > /etc/apt/sources.list
 
 # 安装系统依赖（包括cron）
@@ -29,8 +29,8 @@ RUN apt-get update && apt-get install -y \
     cron \
     && rm -rf /var/lib/apt/lists/*
 
-# 复制项目文件
-COPY . .
+# 复制pyproject.toml and uv.lock for dependency installation
+COPY pyproject.toml uv.lock ./
 
 # 升级cmake
 RUN pip install --upgrade cmake

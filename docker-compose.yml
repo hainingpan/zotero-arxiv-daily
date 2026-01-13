@@ -36,6 +36,7 @@ services:
       # - no_proxy=localhost,127.0.0.1,.internal  # 代理排除项
 
     volumes:
+      - .:/app  # Mount source code for real-time updates
       - ./logs:/var/log/cron  # 日志持久化
       # - ./models:/app/models  # LLM模型缓存，如果你使用本地推理的话
       - /etc/localtime:/etc/localtime:ro  # 同步主机时区

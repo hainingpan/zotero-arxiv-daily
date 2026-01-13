@@ -15,6 +15,7 @@ from tempfile import mkstemp
 from paper import ArxivPaper
 from llm import set_global_llm
 import feedparser
+from paper_date import get_arxiv_date
 
 def get_zotero_corpus(id:str,key:str) -> list[dict]:
     zot = zotero.Zotero(id, 'user', key)
@@ -111,6 +112,8 @@ if __name__ == '__main__':
     add_argument('--sender', type=str, help='Sender email address')
     add_argument('--receiver', type=str, help='Receiver email address')
     add_argument('--sender_password', type=str, help='Sender email password')
+    add_argument('--start_date', type=str, help='Start date in YYYYMMDD format (e.g., "20240101")')
+    add_argument('--end_date', type=str, help='End date in YYYYMMDD format (e.g., "20241231")')
     add_argument(
         "--use_llm_api",
         type=bool,
@@ -162,7 +165,16 @@ if __name__ == '__main__':
         corpus = filter_corpus(corpus, args.zotero_ignore)
         logger.info(f"Remaining {len(corpus)} papers after filtering.")
     logger.info("Retrieving Arxiv papers...")
-    papers = get_arxiv_paper(args.arxiv_query, args.debug)
+    if args.start_date and args.end_date:
+        logger.info(f"Fetching papers from {args.start_date} to {args.end_date} for query: {args.arxiv_query}")
+        papers = get_arxiv_date(
+            category=args.arxiv_query,
+            start_date=args.start_date,
+            end_date=args.end_date
+        )
+    else:
+        logger.info(f"Fetching latest papers for query: {args.arxiv_query}")
+        papers = get_arxiv_paper(args.arxiv_query, args.debug)
     if len(papers) == 0:
         logger.info("No new papers found. Yesterday maybe a holiday and no one submit their work :). If this is not the case, please check the ARXIV_QUERY.")
         if not args.send_empty:
