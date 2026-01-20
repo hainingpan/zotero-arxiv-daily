@@ -1,3 +1,8 @@
+> [!NOTE]
+> **This is a fork of [TideDra/zotero-arxiv-daily](https://github.com/TideDra/zotero-arxiv-daily)** with additional features:
+> - **Custom Date Range Fetching**: New `--start_date` and `--end_date` CLI arguments (YYYYMMDD format) to fetch papers within a specific date range, useful for backfilling historical papers or catching up after holidays. Supports multiple categories with automatic deduplication.
+> - **Robust LLM Error Handling**: Completely rewritten retry logic with exponential backoff, configurable timeouts, and consecutive failure tracking. The workflow gracefully degrades instead of crashing when LLM APIs are unreliable - after repeated failures, it skips TLDR generation and falls back to paper summaries.
+
 <p align="center">
   <a href="" rel="noopener">
  <img width=200px height=200px src="assets/logo.svg" alt="logo"></a>
@@ -105,6 +110,20 @@ uv run main.py
 
 > [!WARNING]
 > Other package managers like pip or conda are not tested. You can still use them to install this workflow because there is a `pyproject.toml`, while potential problems exist.
+
+#### Custom Date Range
+To fetch papers from a specific date range instead of yesterday's papers:
+```bash
+# Fetch all papers from January 2024
+uv run main.py --start_date 20240101 --end_date 20240131
+
+# Fetch papers from a specific week
+uv run main.py --start_date 20240715 --end_date 20240721
+```
+This is useful for:
+- **Backfilling historical data** after setting up the workflow
+- **Catching up** after holidays or weekends when you missed daily emails
+- **Testing** the workflow with a known date range
 
 ## 🚀 Sync with the latest version
 This project is in active development. You can subscribe this repo via `Watch` so that you can be notified once we publish new release.
